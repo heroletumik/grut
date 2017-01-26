@@ -1,0 +1,3 @@
+Host bitbucket.attic.pw
+  StrictHostKeyChecking no
+  IdentityFile /root/.ssh/npm_key_rsa

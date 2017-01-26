@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+    <title>Ledger Viewer</title>
+	<link href="/template/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="/template/css/info.css" rel="stylesheet" type="text/css">
+	<link href="/template/plugins/chartist/dist/chartist.min.css" rel="stylesheet" type="text/css">
+	<link href="/template/css/core.css" rel="stylesheet" type="text/css">
+	<link href="/template/css/icons.css" rel="stylesheet" type="text/css">
+	<link href="/template/css/components.css" rel="stylesheet" type="text/css">
+	<link href="/template/css/pages.css" rel="stylesheet" type="text/css">
+	<link href="/template/css/menu.css" rel="stylesheet" type="text/css">
+	<link href="/template/css/responsive.css" rel="stylesheet" type="text/css">
+    <link href="/template/css/custom.css" rel="stylesheet" type="text/css">
+
+    <!-- jQuery  -->
+    <script src="/template/js/jquery.min.js"></script>
+    <script src="/template/js/bootstrap.min.js"></script>
+    <script src="/js/config.js"></script>
+
+    <!-- Google Analytics -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function()
+                { (i[r].q=i[r].q||[]).push(arguments)}
+                ,i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-84353701-2', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <!-- Google Analytics FINISH -->
+</head>
+<body>
+
+	<!-- Navigation Bar-->
+	<header id="topnav">
+
+        <script type="text/template" id="tpl-header">
+            <div class="topbar-main">
+                <div class="container">
+                    <div class="logo">
+                        <a href="/" class="logo">
+                            <img src="/template/images/logo/<%= logo_src %>" alt=""/>
+                            <span><%=locale.ledger_viewer%></span>
+                        </a>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right pull-right">
+                        <div class="menu-extras">
+                            <div class="text-right flags">
+                                <a href="?lang=ua">
+                                    <img src="/template/images/ua.png" alt="UA"/>
+                                </a>
+                                <a href="?lang=en">
+                                    <img src="/template/images/uk.png" alt="EN"/>
+                                </a>
+                            </div>
+                        </div>
+
+                    </ul>
+                </div>
+            </div>
+        </script>
+
+	</header>
+
+	<div class="wrapper">
+		<div class="container" id="global">
+
+            <script type="text/template" id="tpl-global">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default panel-color">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><%=locale.tx_info%></h3>
+                            </div>
+                            <div class="panel-body" id="tx_image">
+                            </div>
+                            <div class="panel-body" id="tx_data">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--<div class="row">-->
+                    <!--<div class="col-lg-12">-->
+                        <!--<div class="panel panel-default panel-color">-->
+                            <!--<div class="panel-heading"><h3 class="panel-title"><%=locale.ops_info%></h3></div>-->
+                            <!--<div class="panel-body hidden-xs">-->
+                                <!--<table class="table table-bordered">-->
+                                    <!--<thead>-->
+                                    <!--<tr>-->
+                                        <!--<th><%=locale.payment_from%></th>-->
+                                        <!--<th><%=locale.payment_to%></th>-->
+                                        <!--<th><%=locale.amount%></th>-->
+                                        <!--<th><%=locale.date%></th>-->
+                                    <!--</tr>-->
+                                    <!--</thead>-->
+                                    <!--<tbody id="op_data">-->
+
+                                    <!--</tbody>-->
+                                <!--</table>-->
+                            <!--</div>-->
+                            <!--<div class="tx-payments visible-xs">-->
+                                <!--<div id="mob_op_data"></div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </script>
+
+		</div>
+
+        <script type="text/template" id="tx_tpl_acc">
+            <div class="user-box">
+                <img src="/template/images/users/<%=acc.type_i%>.png" width="70" />
+                <div>
+                    <p>
+                        <% switch(acc.type_i) { case 0: %>
+                        <%=locale.acc_type_anonymous %>
+                        <% break; case 1: %>
+                        <%=locale.acc_type_registered %>
+                        <% break; case 2: %>
+                        <%=locale.acc_type_merchant %>
+                        <% break; case 3: %>
+                        <%=locale.acc_type_distribution %>
+                        <% break; case 4: %>
+                        <%=locale.acc_type_settlement %>
+                        <% break; case 5: %>
+                        <%=locale.acc_type_exchange %>
+                        <% break; case 6: %>
+                        <%=locale.acc_type_bank %>
+                        <% break; } %>
+                    </p>
+                </div>
+            </div>
+        </script>
+
+
+        <script type="text/template" id="tx_tpl_handler">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2 wrp-tb-tr">    
+                    <div>
+                        <%=locale.tx_type%>:
+                        <div>
+                            <span>
+                                <%
+                                    var text  = locale.regular;
+                                    var label = 'primary';
+
+                                    switch(transaction.memo) {
+
+                                        case 'card_creation':
+                                            text = locale.card_creation;
+                                            label = 'success';
+                                            break;
+
+                                        case 'funding_card':
+                                            text = locale.card_funding;
+                                            label = 'purple';
+                                            break;
+
+                                        case 'by_invoice':
+                                            text = locale.invoice;
+                                            label = 'warning';
+                                            break;
+
+                                    }
+
+                                    if (
+                                        merchant_prefix && typeof transaction.memo != 'undefined'
+                                        && transaction.memo.substring(0,merchant_prefix.length) == merchant_prefix
+                                    )
+                                    {
+
+                                        text = locale.merchant;
+                                        label = 'warning';
+
+                                    }
+                                %>
+                                <label class="label label-<%=label%>"><%=text%></label>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 wrp-tb-tr">
+                    <div><%=locale.tx_create%>:</div>
+                    <div>                        
+                        <%=getNormalizeDate(transaction.created_at)%>
+                    </div>
+                </div>
+                <div class="col-lg-2 wrp-tb-tr">
+                    <div><%=locale.tx_source%>:</div>
+                    <div class="acc_overflow">                         
+                        <%=transaction.source_account%>                            
+                    </div>
+                </div>
+                <div class="col-lg-2 wrp-tb-tr">
+                    <div><%=locale.memo_tx%>: </div>
+                    <div class="acc_overflow">                        
+                        <%=transaction.memo%>
+                    </div>
+                </div>
+                <div class="col-lg-2 wrp-tb-tr">
+                    <div><%=locale.tx_cnt%>:</div>
+                    <div>                        
+                        <%=transaction.operation_count%>
+                    </div>
+                </div>
+                <div class="col-lg-2 wrp-tb-tr">
+                    <div><%=locale.id_tx%>:</div>
+                    <div class="acc_overflow">                        
+                        <%=transaction.id%>                           
+                    </div>
+                </div>
+            </div>
+        </div>
+        </script>
+
+        <!--<script type="text/template" id="op_tpl_handler">-->
+
+            <!--<% for(var i = 0; i < operations._embedded.records.length; i++) { %>-->
+                <!--<% var payment = operations._embedded.records[i]; %>-->
+                <!--<tr>-->
+                    <!--<th><%=_.trunc(payment.from, {length: 15})%></th>-->
+                    <!--<th><%=_.trunc(payment.to, {length: 15})%></th>-->
+                    <!--<td><%=parseFloat(payment.amount).toFixed(2)%> <%=payment.asset_code%></td>-->
+                    <!--<td>-->
+                        <!--<%=getNormalizeDate(payment.closed_at)%>-->
+                    <!--</td>-->
+                <!--</tr>-->
+            <!--<% } %>-->
+
+        <!--</script>-->
+
+        <!--<script type="text/template" id="mob_op_tpl_handler">-->
+
+            <!--<% for(var i = 0; i < operations._embedded.records.length; i++) { %>-->
+                <!--<% var payment = operations._embedded.records[i]; %>-->
+
+                <!--<div class="payment">-->
+                    <!--<p><span><%=locale.payment_from%>: </span><a href="/account?acc=<%=payment.from%>"><%=_.trunc(payment.from, {length: 15})%></a></p>-->
+                    <!--<p><span><%=locale.payment_to%>: </span><a href="/account?acc=<%=payment.to%>"><%=_.trunc(payment.to, {length: 15})%></a></p>-->
+                    <!--<hr>-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-xs-7">-->
+                            <!--<span><%=locale.tx_create%>: </span><%=getNormalizeDate(payment.closed_at)%>-->
+                        <!--</div>-->
+                        <!--<div class="col-xs-5 text-right">-->
+                            <!--<span class="label label-success">-->
+                                <!--<i class="fa fa-sign-in fa-fw"-->
+                                   <!--aria-hidden="true"></i>-->
+                                <!--&nbsp;-->
+                                <!--<%=parseFloat(payment.amount).toFixed(2)%> <%=payment.asset_code%>-->
+                            <!--</span>-->
+                        <!--</div>-->
+                        <!--<div class="clearfix"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--<% } %>-->
+        <!--</script>-->
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function (event) {
+                if(typeof window.get_params.tx != 'undefined' && window.get_params.tx.length){
+                    txInfo(window.get_params.tx);
+                } else {
+                    window.location.href = '/';
+                }
+            });
+        </script>
+
+	</div>
+
+	<script src="/node_modules/sjcl/sjcl.js"></script>
+	<script src="/node_modules/stellar-sdk/dist/stellar-sdk.min.js"></script>
+
+	<!-- Notification js -->
+	<script src="/template/plugins/notifyjs/dist/notify.min.js"></script>
+	<script src="/template/plugins/notifications/notify-metro.js"></script>
+
+	<!-- Chartist -->
+	<script src="/template/plugins/chartist/dist/chartist.min.js"></script>
+
+	<!-- Custom main Js -->
+	<script src="/template/js/jquery.core.js"></script>
+    <script src="/template/js/locales.js"></script>
+    <script src="./build/bundle.js"></script>
+    <script src="/template/js/info.js"></script>
+
+</body>
+</html>
