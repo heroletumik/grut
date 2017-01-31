@@ -3,6 +3,9 @@
 echo "Copying node_modules"
 cp -rf /tmp/node_modules ./
 
+export http_proxy=''
+export https_proxy=''
+
 for DIR in `find . -mindepth 1 -maxdepth 1 -type d`
 do
     echo "Building ${DIR}"
