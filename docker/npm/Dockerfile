@@ -12,10 +12,10 @@ COPY ./Gulpfile.js /tmp
 #COPY ./ssh_key/npm_key_rsa /root/.ssh
 
 #RUN chmod 600 /root/.ssh/npm_key_rsa
-RUN npm config set registry http://registry.npmjs.org && cd /tmp && npm install
+RUN cd /tmp && npm install
 
-export http_proxy=''
-export https_proxy=''
+ENV http_proxy=  
+ENV https_proxy= 
 
 WORKDIR /src
 
