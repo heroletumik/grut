@@ -1,6 +1,6 @@
 StellarSdk.Network.use(new StellarSdk.Network(process.env.STELLAR_NETWORK));
 
-function getPromptValue(label, message) {
+window.getPromptValue = function(label, message) {
     return new Promise(function (resolve, reject) {
         jPrompt(message, '', label, locale.js_button_ok, locale.js_button_cancel, function (result) {
             resolve(result);
@@ -8,7 +8,7 @@ function getPromptValue(label, message) {
     });
 }
 
-function uploadFile(file) {
+window.uploadFile = function(file) {
     var reader = new FileReader();
     reader.readAsText(file, "UTF-8");
     reader.fileName = file.name;
@@ -51,6 +51,7 @@ function uploadFile(file) {
                                 clearDropzone();
                             })
                             .catch(function (e) {
+                                console.error(e);
                                 return flashAlert(locale.js_cannot_decrypt + ': ' + locale.js_wrong_password, 'error');
                             });
                     } else {
@@ -68,7 +69,7 @@ function uploadFile(file) {
     }
 }
 
-function download(fileNameToSaveAs, textToWrite) {
+window.download = function(fileNameToSaveAs, textToWrite) {
     /* Saves a text string as a blob file*/
     var ie = navigator.userAgent.match(/MSIE\s([\d.]+)/),
         ie11 = navigator.userAgent.match(/Trident\/7.0/) && navigator.userAgent.match(/rv:11/),
@@ -113,12 +114,12 @@ function download(fileNameToSaveAs, textToWrite) {
     }
 }
 
-function clearDropzone(){
+window.clearDropzone = function(){
     Dropzone.forElement(".dropzone").removeAllFiles(true);
 }
 
 
-function flashAlert(msg, cls) {
+window.flashAlert = function(msg, cls) {
     if (typeof cls == 'undefined') {
         cls = 'info';
     }
